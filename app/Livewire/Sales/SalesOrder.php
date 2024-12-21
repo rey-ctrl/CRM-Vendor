@@ -104,62 +104,62 @@ class SalesOrder extends Component
 
 
   // Di SalesOrder component
-public function convertToProject($saleId)
-{
-    try {
-        DB::beginTransaction();
-
-        $sale = Sales::with(['details.product', 'customer'])->find($saleId);
-        
-        if (!$sale) {
-            throw new \Exception('Sale dengan ID ' . $saleId . ' tidak ditemukan.');
-        }
-
-        if ($sale->status === 'Converted') {
-            throw new \Exception('Sale sudah dikonversi ke project sebelumnya.');
-        }
-
-        // Ambil vendor pertama sebagai default
-        $defaultVendor = Vendor::first();
-        if (!$defaultVendor) {
-            throw new \Exception('Tidak ada vendor tersedia untuk project.');
-        }
-
-        // Buat project baru dengan default vendor
-        $project = Project::create([
-            'vendor_id' => $defaultVendor->vendor_id, // Set default vendor
-            'customer_id' => $sale->customer_id,
-            'product_id' => $sale->details->first()->product_id,
-            'project_header' => "Project from SO #" . str_pad($sale->sale_id, 5, '0', STR_PAD_LEFT),
-            'project_value' => $sale->fixed_amount,
-            'project_duration_start' => now(),
-            'project_duration_end' => now()->addMonths(1),
-            'project_detail' => "Converted from Sales Order #" . str_pad($sale->sale_id, 5, '0', STR_PAD_LEFT)
-        ]);
-
-        // Attach products dari sales ke project
-        foreach ($sale->details as $detail) {
-            $project->products()->attach($detail->product_id, [
-                'quantity' => $detail->quantity,
-                'price_at_time' => $detail->product->product_price,
-                'subtotal' => $detail->subtotal,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-
-        // Update status sale
-        $sale->update(['status' => 'Converted']);
-
-        DB::commit();
-        
-        $this->dispatch('sale-converted', 'Sales Order berhasil dikonversi ke Project!');
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        session()->flash('error', $e->getMessage());
-    }
-}
+  public function convertToProject()
+  {
+      $this->validate([
+          'project_header' => 'required|string|max:100'
+      ]);
+  
+      try {
+          DB::beginTransaction();
+  
+          $sale = Sales::with(['details.product', 'customer'])->findOrFail($this->selectedSale->sale_id);
+          
+          if (!$sale) {
+              throw new \Exception('Sale dengan ID ' . $this->selectedSale . ' tidak ditemukan.');
+          }
+  
+          if ($sale->status === 'Converted') {
+              throw new \Exception('Sale sudah dikonversi ke project sebelumnya.');
+          }
+  
+          // Buat project baru tanpa vendor (null)
+          $project = Project::create([
+              'vendor_id' => null,  // Set vendor_id ke null
+              'customer_id' => $sale->customer_id,
+              'product_id' => $sale->details->first()->product_id,
+              'project_header' => $this->project_header,
+              'project_value' => $sale->fixed_amount,
+              'project_duration_start' => now(),
+              'project_duration_end' => now()->addMonths(1),
+              'project_detail' => "Converted from Sales Order #" . str_pad($sale->sale_id, 5, '0', STR_PAD_LEFT)
+          ]);
+  
+          // Attach products dari sales ke project
+          foreach ($sale->details as $detail) {
+              $project->products()->attach($detail->product_id, [
+                  'quantity' => $detail->quantity,
+                  'price_at_time' => $detail->product->product_price,
+                  'subtotal' => $detail->subtotal,
+                  'created_at' => now(),
+                  'updated_at' => now()
+              ]);
+          }
+  
+          // Update status sale
+          $sale->update(['status' => 'Converted']);
+  
+          DB::commit();
+          
+          $this->showConvertModal = false;
+          $this->reset(['project_header']);
+          $this->dispatch('sale-converted', 'Sales Order berhasil dikonversi ke Project!');
+  
+      } catch (\Exception $e) {
+          DB::rollBack();
+          session()->flash('error', $e->getMessage());
+      }
+  }
    protected function messages()
    {
        return [

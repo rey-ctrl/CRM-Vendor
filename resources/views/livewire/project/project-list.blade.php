@@ -127,7 +127,7 @@
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">
                                     <div class="font-medium">{{ $project->customer->customer_name }}</div>
-                                    <div class="text-gray-500">{{ $project->vendor->vendor_name }}</div>
+                                    <div class="text-gray-500">{{ $project->vendor->vendor_name ?? 'Tidak Ada Vendor' }}</div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">

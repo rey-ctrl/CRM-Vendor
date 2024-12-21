@@ -88,15 +88,9 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                 @if($sale->status !== 'Converted')
-                                <button wire:click="convertToProject({{ $sale->sale_id }})"
-                                        wire:loading.attr="disabled"
-                                        class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-purple-700 bg-purple-100 hover:bg-purple-200">
-                                    <span wire:loading.remove wire:target="convertToProject({{ $sale->sale_id }})">
-                                        Convert to Project
-                                    </span>
-                                    <span wire:loading wire:target="convertToProject({{ $sale->sale_id }})">
-                                        Converting...
-                                    </span>
+                                <button wire:click="openConvertModal({{ $sale->sale_id }})"
+                                    class="text-purple-600 hover:text-purple-900">
+                                    Convert to Project
                                 </button>
                             @else
                                 <span class="text-green-600">Converted</span>
@@ -211,59 +205,47 @@
 
         <!-- Convert to Project Modal -->
         
+<!-- Modal Convert to Project -->
 @if($showConvertModal)
-<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
-    <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-lg">
-                <form wire:submit="convertToProject">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">
-                            Convert Sales Order to Project
-                        </h3>
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-lg">
+                    <form wire:submit="convertToProject">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">
+                                Convert Sales Order to Project
+                            </h3>
 
-                        <!-- Project Header Field -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Project Header</label>
-                            <input type="text" 
-                                wire:model="project_header" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                placeholder="Enter project header">
-                            @error('project_header') 
-                                <span class="text-sm text-red-600">{{ $message }}</span> 
-                            @enderror
+                            <!-- Project Header Field -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Project Header</label>
+                                <input type="text" 
+                                    wire:model="project_header" 
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    placeholder="Enter project header">
+                                @error('project_header') 
+                                    <span class="text-sm text-red-600">{{ $message }}</span> 
+                                @enderror
+                            </div>
                         </div>
 
-                        <!-- Project Details -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Project Details</label>
-                            <textarea 
-                                wire:model="project_detail" 
-                                rows="3" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                placeholder="Enter project details"></textarea>
-                            @error('project_detail') 
-                                <span class="text-sm text-red-600">{{ $message }}</span> 
-                            @enderror
+                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                            <button type="submit"
+                                class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ml-3">
+                                Convert
+                            </button>
+                            <button type="button"
+                                wire:click="closeConvertModal"
+                                class="mt-3 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                Cancel
+                            </button>
                         </div>
-                    </div>
-
-                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                        <button type="submit"
-                            class="inline-flex justify-center rounded-md border border-transparent bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ml-3">
-                            Convert
-                        </button>
-                        <button type="button"
-                            wire:click="$set('showConvertModal', false)"
-                            class="mt-3 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endif
 
         <!-- Flash Messages -->
