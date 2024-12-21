@@ -75,7 +75,7 @@ class ProjectList extends Component
     protected function rules()
     {
         return [
-            'vendor_id' => 'required|exists:vendors,vendor_id',
+            'vendor_id' => 'nullable|exists:vendors,vendor_id', 
             'customer_id' => 'required|exists:customers,customer_id',
             'product_id' => 'required|exists:products,product_id',
             'project_header' => 'required|string|max:100',
@@ -83,7 +83,6 @@ class ProjectList extends Component
             'project_duration_start' => 'required|date',
             'project_duration_end' => 'required|date|after:project_duration_start',
             'project_detail' => 'required|string|max:255',
-            'project_status' => 'required|in:Pending,In Progress,Completed',
             'selectedProducts' => 'required|array|min:1',
             'quantities.*' => 'required|integer|min:1',
         ];
@@ -179,18 +178,37 @@ class ProjectList extends Component
     }
 
     public function calculateSubtotal($productId)
-    {
+{
+    try {
         if (isset($this->quantities[$productId]) && isset($this->productPrices[$productId])) {
-            $this->productSubtotals[$productId] = $this->quantities[$productId] * $this->productPrices[$productId];
+            $this->productSubtotals[$productId] = 
+                floatval($this->quantities[$productId]) * floatval($this->productPrices[$productId]);
         }
         $this->calculateTotal();
+        
+    } catch (\Exception $e) {
+        session()->flash('error', 'Error calculating subtotal: ' . $e->getMessage());
     }
+}
 
     public function calculateTotal()
-    {
-        $this->total_products = array_sum($this->productSubtotals);
+{
+    try {
+        // Calculate total from products
+        $this->total_products = 0;
+        foreach ($this->selectedProducts as $productId => $selected) {
+            if ($selected && isset($this->productSubtotals[$productId])) {
+                $this->total_products += floatval($this->productSubtotals[$productId]);
+            }
+        }
+        
+        // Add additional project value
         $this->total_value = $this->total_products + floatval($this->project_value);
+        
+    } catch (\Exception $e) {
+        session()->flash('error', 'Error calculating totals: ' . $e->getMessage());
     }
+}
 
     public function updatedProjectValue()
     {
@@ -222,32 +240,51 @@ class ProjectList extends Component
 
     public function edit($id)
     {
-        $this->resetValidation();
-        $this->editMode = true;
-        $this->project_id = $id;
-
-        $project = Project::with('products')->findOrFail($id);
-
-        // Set form fields
-        $this->vendor_id = $project->vendor_id;
-        $this->customer_id = $project->customer_id;
-        $this->product_id = $project->product_id;
-        $this->project_header = $project->project_header;
-        $this->project_value = $project->project_value;
-        $this->project_duration_start = $project->project_duration_start->format('Y-m-d');
-        $this->project_duration_end = $project->project_duration_end->format('Y-m-d');
-        $this->project_detail = $project->project_detail;
-        $this->project_status = $project->status;
-
-        // Set selected products
-        foreach ($project->products as $product) {
-            $this->selectedProducts[$product->product_id] = true;
-            $this->quantities[$product->product_id] = $product->pivot->quantity;
-            $this->productPrices[$product->product_id] = $product->pivot->price_at_time;
-            $this->calculateSubtotal($product->product_id);
+        try {
+            $this->resetValidation();
+            $this->editMode = true;
+            $this->project_id = $id;
+    
+            $project = Project::with(['products', 'vendor', 'customer'])->findOrFail($id);
+    
+            // Reset arrays dulu untuk menghindari data tersisa
+            $this->selectedProducts = [];
+            $this->quantities = [];
+            $this->productPrices = [];
+            $this->productSubtotals = [];
+            $this->total_products = 0;
+            $this->total_value = 0;
+    
+            // Set basic fields
+            $this->vendor_id = $project->vendor_id;
+            $this->customer_id = $project->customer_id;
+            $this->product_id = $project->product_id;
+            $this->project_header = $project->project_header;
+            $this->project_duration_start = $project->project_duration_start->format('Y-m-d');
+            $this->project_duration_end = $project->project_duration_end->format('Y-m-d');
+            $this->project_detail = $project->project_detail;
+            $this->project_status = $project->status ?? 'Pending';
+    
+            // Set products with pivot data
+            foreach ($project->products as $product) {
+                $this->selectedProducts[$product->product_id] = true;
+                $this->quantities[$product->product_id] = $product->pivot->quantity;
+                $this->productPrices[$product->product_id] = $product->pivot->price_at_time;
+                $this->productSubtotals[$product->product_id] = $product->pivot->subtotal;
+                $this->total_products += $product->pivot->subtotal;
+            }
+    
+            // Set initial project value (nilai tambahan di luar produk)
+            $this->project_value = floatval($project->project_value) - $this->total_products;
+            
+            // Calculate total value
+            $this->calculateTotal();
+    
+            $this->showModal = true;
+            
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error editing project: ' . $e->getMessage());
         }
-
-        $this->showModal = true;
     }
 
     public function save()
