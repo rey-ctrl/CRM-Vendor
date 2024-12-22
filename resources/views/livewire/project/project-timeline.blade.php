@@ -138,7 +138,7 @@
                                     <div class="sm:flex">
                                         <div class="mr-6">
                                             <p class="text-sm text-gray-500">
-                                                Vendor: {{ $project->vendor->vendor_name }}
+                                                Vendor: {{ $project->vendor->vendor_name ?? 'Tidak Ada Vendor' }}
                                             </p>
                                             <p class="text-sm text-gray-500">
                                                 Customer: {{ $project->customer->customer_name }}

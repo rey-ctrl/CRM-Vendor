@@ -125,13 +125,12 @@
                 </select>
             </div>
             <div>
-                <input type="text" wire:model.live="dateRangeFilter" 
-                    x-data
-                    x-init="flatpickr($el, {mode: 'range', dateFormat: 'Y-m-d'})"
+                <input type="date" wire:model.live="dateRangeFilter"
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Select date range">
+                    placeholder="Select date">
             </div>
         </div>
+        
     </div>
 
     <!-- Projects Table -->
@@ -178,7 +177,7 @@
                         <td class="px-6 py-4">
                             <div class="text-sm text-gray-900">
                                 <div class="font-medium">{{ $project->customer->customer_name }}</div>
-                                <div class="text-gray-500">{{ $project->vendor->vendor_name }}</div>
+                                <div class="text-gray-500">{{ $project->vendor->vendor_name ?? 'Tidak Ada Vendor' }}</div>
                             </div>
                         </td>
                         <td class="px-6 py-4">

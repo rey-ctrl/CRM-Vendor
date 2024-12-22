@@ -113,8 +113,9 @@ class PriceQuotation extends Component
         try {
             DB::beginTransaction();
     
-            // Ambil data quotation bersama project
-            $quotation = PriceQuotationModel::with('project')->findOrFail($quotationId);
+            // Ambil data quotation bersama project dan vendor
+            $quotation = PriceQuotationModel::with(['project', 'vendor'])->findOrFail($quotationId);
+            
             if (!$quotation) {
                 throw new \Exception('Quotation tidak ditemukan');
             }
@@ -122,15 +123,22 @@ class PriceQuotation extends Component
             if (!$quotation->project) {
                 throw new \Exception('Project tidak ditemukan untuk quotation ini');
             }
+    
+            // Pastikan vendor ada di quotation
+            if (!$quotation->vendor) {
+                throw new \Exception('Vendor tidak ditemukan untuk quotation ini');
+            }
             
-            // Update project value dengan amount dari quotation
+            // Update project value dan vendor dari quotation
             $quotation->project->update([
-                'project_value' => $quotation->amount
+                'project_value' => $quotation->amount,
+                'vendor_id' => $quotation->vendor_id  // Tambahkan update vendor
             ]);
     
+              
             DB::commit();
             
-            $this->dispatch('quotation-accepted', 'Quotation berhasil diterima dan nilai proyek telah diupdate!');
+            $this->dispatch('quotation-accepted', 'Quotation berhasil diterima, nilai proyek dan vendor telah diupdate!');
     
         } catch (\Exception $e) {
             DB::rollBack();
@@ -189,6 +197,8 @@ class PriceQuotation extends Component
             session()->flash('error', 'Error deleting quotation: ' . $e->getMessage());
         }
     }
+
+    
 
     public function resetFilters()
     {

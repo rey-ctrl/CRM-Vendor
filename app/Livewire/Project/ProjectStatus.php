@@ -22,8 +22,11 @@ class ProjectStatus extends Component
     public $sortDirection = 'asc';
     public $selectedProject = null;
     public $showDetailModal = false;
+    public $startDateFilter = '';
+public $endDateFilter = '';
 
-    protected $queryString = ['search', 'vendorFilter', 'customerFilter', 'statusFilter', 'dateRangeFilter'];
+    protected $queryString = ['search', 'vendorFilter', 'customerFilter', 'statusFilter', 'dateRangeFilter','startDateFilter' => ['except' => ''],
+    'endDateFilter' => ['except' => '']];
 
     public function updatingSearch()
     {
@@ -48,133 +51,149 @@ class ProjectStatus extends Component
     }
 
     public function getProjectStatus($project)
-    {
-        $startDate = Carbon::parse($project->project_duration_start);
-        $endDate = Carbon::parse($project->project_duration_end);
-        $today = now();
+{
+    $startDate = Carbon::parse($project->project_duration_start);
+    $endDate = Carbon::parse($project->project_duration_end);
+    $today = now();
 
-        $totalDays = $startDate->diffInDays($endDate) ?: 1;
-        $elapsedDays = $startDate->diffInDays($today);
-        $progress = min(100, max(0, ($elapsedDays / $totalDays) * 100));
+    $totalDays = $startDate->diffInDays($endDate) ?: 1;
+    $elapsedDays = $startDate->diffInDays($today);
+    $progress = min(100, max(0, ($elapsedDays / $totalDays) * 100));
 
-        if ($today < $startDate) {
-            return [
-                'status' => 'Not Started',
-                'color' => 'gray',
-                'progress' => 0,
-                'days_remaining' => $today->diffInDays($startDate) . ' days until start',
-                'badge_color' => 'bg-gray-100 text-gray-800'
-            ];
-        } elseif ($today > $endDate) {
-            $delay = $endDate->diffInDays($today);
-            return [
-                'status' => 'Completed',
-                'color' => $today->diffInDays($endDate) > 0 ? 'red' : 'green',
-                'progress' => 100,
-                'days_remaining' => $delay > 0 ? $delay . ' days overdue' : 'On time completion',
-                'badge_color' => $delay > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-            ];
-        } else {
-            $daysLeft = $today->diffInDays($endDate);
-            $isOnTrack = ($progress >= ($elapsedDays / $totalDays) * 100);
-            return [
-                'status' => 'In Progress',
-                'color' => $isOnTrack ? 'blue' : 'yellow',
-                'progress' => $progress,
-                'days_remaining' => $daysLeft . ' days remaining',
-                'badge_color' => $isOnTrack ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
-            ];
-        }
-    }
-
-    public function getProjectMetrics()
-    {
-        $projects = Project::all();
-        $totalProjects = $projects->count();
-        $notStarted = 0;
-        $inProgress = 0;
-        $completed = 0;
-        $onTrack = 0;
-        $delayed = 0;
-        $totalValue = 0;
-
-        foreach ($projects as $project) {
-            $status = $this->getProjectStatus($project);
-            
-            switch ($status['status']) {
-                case 'Not Started':
-                    $notStarted++;
-                    break;
-                case 'In Progress':
-                    $inProgress++;
-                    if ($status['color'] === 'blue') {
-                        $onTrack++;
-                    } else {
-                        $delayed++;
-                    }
-                    break;
-                case 'Completed':
-                    $completed++;
-                    if ($status['color'] === 'red') {
-                        $delayed++;
-                    }
-                    break;
-            }
-
-            $totalValue += $project->project_value;
-        }
-
+    if ($today < $startDate) {
         return [
-            'total' => $totalProjects,
-            'not_started' => $notStarted,
-            'in_progress' => $inProgress,
-            'completed' => $completed,
-            'on_track' => $onTrack,
-            'delayed' => $delayed,
-            'total_value' => $totalValue,
-            'completion_rate' => $totalProjects > 0 ? ($completed / $totalProjects) * 100 : 0,
-            'on_track_rate' => $inProgress > 0 ? ($onTrack / $inProgress) * 100 : 0
+            'status' => 'Not Started',
+            'color' => 'gray',
+            'progress' => 0,
+            'days_remaining' => $today->diffInDays($startDate) . ' days until start',
+            'badge_color' => 'bg-gray-100 text-gray-800'
+        ];
+    } elseif ($today > $endDate) {
+        $delay = round($endDate->diffInDays($today));
+        return [
+            'status' => 'Completed',
+            'color' => 'green', // Ubah warna menjadi hijau
+            'progress' => 100,
+            'days_remaining' => $delay > 0 ? "Completed {$delay} days ago" : 'Completed on time',
+            'badge_color' => 'bg-green-100 text-green-800'
+        ];
+    } else {
+        $daysLeft = round($today->diffInDays($endDate));
+        $isOnTrack = ($progress >= ($elapsedDays / $totalDays) * 100);
+        return [
+            'status' => 'In Progress',
+            'color' => $isOnTrack ? 'blue' : 'yellow',
+            'progress' => $progress,
+            'days_remaining' => $daysLeft . ' days remaining',
+            'badge_color' => $isOnTrack ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
         ];
     }
+}
+
+public function getProjectMetrics()
+{
+    $projects = Project::all();
+    $totalProjects = $projects->count();
+    $notStarted = 0;
+    $inProgress = 0;
+    $completed = 0;
+    $onTrack = 0;
+    $delayed = 0;
+    $totalValue = 0;
+
+    $today = now();
+
+    foreach ($projects as $project) {
+        $startDate = Carbon::parse($project->project_duration_start);
+        $endDate = Carbon::parse($project->project_duration_end);
+
+        // Hitung status proyek
+        if ($today < $startDate) {
+            // Proyek belum dimulai
+            $notStarted++;
+            $delayed++; // Proyek yang belum dimulai dianggap delayed
+        } elseif ($today > $endDate) {
+            // Proyek sudah lewat waktu
+            $completed++;
+            $delayed++;
+        } else {
+            // Proyek sedang berjalan
+            $inProgress++;
+            
+            // Hitung apakah on track
+            $totalDays = $startDate->diffInDays($endDate) ?: 1;
+            $daysElapsed = $startDate->diffInDays($today);
+            $expectedProgress = ($daysElapsed / $totalDays) * 100;
+            
+            if ($expectedProgress > 75) {
+                $delayed++;
+            } else {
+                $onTrack++;
+            }
+        }
+
+        $totalValue += $project->project_value;
+    }
+
+    return [
+        'total' => $totalProjects,
+        'not_started' => $notStarted,
+        'in_progress' => $inProgress,
+        'completed' => $completed,
+        'on_track' => $onTrack,
+        'delayed' => $delayed,
+        'total_value' => $totalValue,
+        'completion_rate' => $totalProjects > 0 ? ($completed / $totalProjects) * 100 : 0,
+        'on_track_rate' => $inProgress > 0 ? ($onTrack / $inProgress) * 100 : 0
+    ];
+}
 
     public function getDaysRemaining($project)
     {
         $endDate = Carbon::parse($project->project_duration_end);
         $today = now();
-        $days = $today->diffInDays($endDate);
-
+    
+        // Jika proyek sudah selesai
         if ($today > $endDate) {
-            return ['text' => $days . ' days overdue', 'class' => 'text-red-600'];
+            $daysAgo = round($today->diffInDays($endDate));
+            
+            // Variasi pesan berdasarkan jumlah hari
+            if ($daysAgo == 0) {
+                return ['text' => 'Completed today', 'class' => 'text-green-600'];
+            } elseif ($daysAgo == 1) {
+                return ['text' => 'Completed yesterday', 'class' => 'text-green-600'];
+            } else {
+                return ['text' => "Completed {$daysAgo} days ago", 'class' => 'text-green-600'];
+            }
         }
         
-        if ($days <= 7) {
-            return ['text' => $days . ' days left', 'class' => 'text-yellow-600'];
+        // Untuk proyek yang masih berjalan
+        $daysLeft = round($today->diffInDays($endDate));
+        
+        if ($daysLeft <= 7) {
+            return ['text' => $daysLeft . ' days left', 'class' => 'text-yellow-600'];
         }
         
-        return ['text' => $days . ' days remaining', 'class' => 'text-green-600'];
+        return ['text' => $daysLeft . ' days remaining', 'class' => 'text-green-600'];
     }
 
     public function render()
     {
         $query = Project::with(['vendor', 'customer'])
-            ->when($this->search, function($q) {
-                $q->where(function($query) {
-                    $query->where('project_header', 'like', '%' . $this->search . '%')
-                          ->orWhere('project_detail', 'like', '%' . $this->search . '%')
-                          ->orWhereHas('vendor', function($q) {
-                              $q->where('vendor_name', 'like', '%' . $this->search . '%');
-                          })
-                          ->orWhereHas('customer', function($q) {
-                              $q->where('customer_name', 'like', '%' . $this->search . '%');
-                          });
-                });
-            })
-            ->when($this->vendorFilter, function($q) {
-                $q->where('vendor_id', $this->vendorFilter);
-            })
-            ->when($this->customerFilter, function($q) {
-                $q->where('customer_id', $this->customerFilter);
-            })
+        // ... existing filters ...
+        ->when($this->startDateFilter && $this->endDateFilter, function($q) {
+            $startDate = Carbon::parse($this->startDateFilter);
+            $endDate = Carbon::parse($this->endDateFilter);
+            
+            $q->where(function($query) use ($startDate, $endDate) {
+                $query->whereBetween('project_duration_start', [$startDate, $endDate])
+                      ->orWhereBetween('project_duration_end', [$startDate, $endDate])
+                      ->orWhere(function($subQuery) use ($startDate, $endDate) {
+                          $subQuery->where('project_duration_start', '<=', $startDate)
+                                   ->where('project_duration_end', '>=', $endDate);
+                      });
+            });
+        })
             ->when($this->statusFilter, function($q) {
                 $today = now();
                 switch($this->statusFilter) {
@@ -189,16 +208,21 @@ class ProjectStatus extends Component
                         $q->where('project_duration_end', '<', $today);
                         break;
                     case 'delayed':
-                        $q->where('project_duration_end', '<', $today);
+                        $q->where(function($query) use ($today) {
+                            // Proyek yang belum dimulai
+                            $query->where('project_duration_start', '>', $today)
+                                  // Atau proyek yang sudah lewat waktu
+                                  ->orWhere('project_duration_end', '<', $today);
+                        });
                         break;
                 }
             })
             ->when($this->dateRangeFilter, function($q) {
-                [$start, $end] = explode(' to ', $this->dateRangeFilter . ' to ');
-                if ($start && $end) {
-                    $q->whereBetween('project_duration_start', [$start, $end])
-                      ->orWhereBetween('project_duration_end', [$start, $end]);
-                }
+                $selectedDate = Carbon::parse($this->dateRangeFilter);
+                $q->where(function($query) use ($selectedDate) {
+                    $query->whereDate('project_duration_start', '<=', $selectedDate)
+                          ->whereDate('project_duration_end', '>=', $selectedDate);
+                });
             })
             ->orderBy($this->sortField, $this->sortDirection);
 
@@ -209,4 +233,10 @@ class ProjectStatus extends Component
             'metrics' => $this->getProjectMetrics()
         ]);
     }
+
+    public function resetDateFilters()
+{
+    $this->reset(['startDateFilter', 'endDateFilter']);
+    $this->resetPage();
+}
 }

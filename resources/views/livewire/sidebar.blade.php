@@ -1,4 +1,4 @@
-<div x-data="{ 
+<div x-data="{
     openMenu: null,
     isActive(path) {
         return window.location.pathname.startsWith(path);
@@ -13,39 +13,40 @@
         else if (path.startsWith('/projects')) this.openMenu = 'project';
         else if (path.startsWith('/reports')) this.openMenu = 'report';
         else if (path.startsWith('/vendors')) this.openMenu = 'vendor';
-
     }
 }" x-init="initializeMenu()">
     <aside class="h-screen">
         <nav class="h-full flex flex-col bg-white border-r shadow-sm transition-all w-64" id="sidebar">
-            <!-- Header -->
-            <div class="p-4 pb-2 flex justify-between items-center">
-                <div id="logo" class="flex items-center transition-all">
-                    <span class="self-center text-xl font-semibold whitespace-nowrap text-black dark:text-white">CRM
-                        Vendor</span>
+            <!-- Fixed Header Section -->
+            <div class="flex-none">
+                <!-- Logo/Header -->
+                <div class="p-4 pb-2 flex justify-between items-center border-b">
+                    <div id="logo" class="flex items-center transition-all">
+                        <span class="self-center text-xl font-semibold whitespace-nowrap text-black dark:text-white">CRM
+                            Vendor</span>
+                    </div>
+                    <button onclick="toggleSidebar()" class="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100">
+                    </button>
                 </div>
-                <button onclick="toggleSidebar()" class="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100">
-                    {{-- <span id="toggleIcon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+
+                <!-- Dashboard Link (Fixed) -->
+                <a href="/dashboard"
+                    class="flex justify-center relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
+                    :class="isActive('/dashboard') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-black'">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
                         </svg>
-                    </span> --}}
-                </button>
+                        <span>Dashboard</span>
+                    </div>
+                </a>
+                <div class="border-b"></div>
             </div>
-            <!-- Dashboard Menu -->
-            <a href="/dashboard" class="flex justify-center relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
-                :class="isActive('/dashboard') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-black'">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
-                    </svg>
-                    <span>Dashboard</span>
-                </div>
-            </a>
-            <div class="border-b"></div>
 
             <!-- Users Menu -->
-            <div class="flex-1 px-3 mt-3">
+            <div class="flex-1 overflow-y-auto px-3 mt-3">
                 <a @click="openMenu = (openMenu === 'users' ? null : 'users')"
                     class="flex justify-between relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
                     :class="isActive('/users') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-black'">
@@ -57,13 +58,13 @@
                         </svg>
                         <span>Users</span>
                     </div>
-                    <svg x-show="openMenu !== 'users' && !isActive('/users')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu !== 'users' && !isActive('/users')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                     </svg>
-                    <svg x-show="openMenu === 'users' || isActive('/users')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu === 'users' || isActive('/users')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                     </svg>
@@ -74,10 +75,11 @@
                     x-transition:enter-end="opacity-100 transform translate-y-0"
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 transform translate-y-0"
-                    x-transition:leave-end="opacity-0 transform -translate-y-4"
-                    class="flex flex-col gap-1 mt-1">
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
                     <a href="/users" class="p-4 rounded"
-                        :class="isActive('/users') && !window.location.pathname.includes('/profile') && !window.location.pathname.includes('/access') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/users') && !window.location.pathname.includes('/profile') && !window.location
+                            .pathname.includes('/access') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         User Management
                     </a>
                     <a href="/users/profile" class="p-4 rounded"
@@ -102,13 +104,13 @@
                         </svg>
                         <span>Customer</span>
                     </div>
-                    <svg x-show="openMenu !== 'customer' && !isActive('/customers')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu !== 'customer' && !isActive('/customers')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                     </svg>
-                    <svg x-show="openMenu === 'customer' || isActive('/customers')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu === 'customer' || isActive('/customers')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                     </svg>
@@ -119,58 +121,60 @@
                     x-transition:enter-end="opacity-100 transform translate-y-0"
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 transform translate-y-0"
-                    x-transition:leave-end="opacity-0 transform -translate-y-4"
-                    class="flex flex-col gap-1 mt-1">
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
                     <a href="/customers" class="p-4 rounded"
-                        :class="isActive('/customers') && !window.location.pathname.includes('/interaction') && !window.location.pathname.includes('/segmentation') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/customers') && !window.location.pathname.includes('/interaction') && !window.location
+                            .pathname.includes('/segmentation') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Customer Data
                     </a>
                     <a href="/customers/interaction" class="p-4 rounded"
-                        :class="isActive('/customers/interaction') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/customers/interaction') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Customer Interaction
                     </a>
                     <a href="/customers/segmentation" class="p-4 rounded"
-                        :class="isActive('/customers/segmentation') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/customers/segmentation') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Customer Segmentation
                     </a>
                 </div>
-    <!-- Vendor Menu -->
-<a @click="openMenu = (openMenu === 'vendor' ? null : 'vendor')"
-class="flex justify-between relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
-:class="isActive('/vendors') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-black'">
-<div class="flex items-center gap-2">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-        stroke-width="1.5" stroke="currentColor" class="size-5">
-        <path stroke-linecap="round" stroke-linejoin="round"
-            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
-    </svg>
-    <span>Vendor</span>
-</div>
-<svg x-show="openMenu !== 'vendor' && !isActive('/vendors')" xmlns="http://www.w3.org/2000/svg" fill="none"
-    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-    class="size-6 transition-transform duration-200">
-    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-</svg>
-<svg x-show="openMenu === 'vendor' || isActive('/vendors')" xmlns="http://www.w3.org/2000/svg" fill="none"
-    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-    class="size-6 transition-transform duration-200">
-    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-</svg>
-</a>
-<div x-show="openMenu === 'vendor' || isActive('/vendors')"
-x-transition:enter="transition ease-out duration-200"
-x-transition:enter-start="opacity-0 transform -translate-y-4"
-x-transition:enter-end="opacity-100 transform translate-y-0"
-x-transition:leave="transition ease-in duration-200"
-x-transition:leave-start="opacity-100 transform translate-y-0"
-x-transition:leave-end="opacity-0 transform -translate-y-4"
-class="flex flex-col gap-1 mt-1">
-<a href="/vendors" class="p-4 rounded"
-    :class="isActive('/vendors') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
-    Vendor List
-</a>
-</div>
-                
+                <!-- Vendor Menu -->
+                <a @click="openMenu = (openMenu === 'vendor' ? null : 'vendor')"
+                    class="flex justify-between relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
+                    :class="isActive('/vendors') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-black'">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
+                        </svg>
+                        <span>Vendor</span>
+                    </div>
+                    <svg x-show="openMenu !== 'vendor' && !isActive('/vendors')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                        class="size-6 transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                    <svg x-show="openMenu === 'vendor' || isActive('/vendors')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                        class="size-6 transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                    </svg>
+                </a>
+                <div x-show="openMenu === 'vendor' || isActive('/vendors')"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 transform -translate-y-4"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform translate-y-0"
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
+                    <a href="/vendors" class="p-4 rounded"
+                        :class="isActive('/vendors') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        Vendor List
+                    </a>
+                </div>
+
                 <!-- Sales Menu -->
                 <a @click="openMenu = (openMenu === 'sales' ? null : 'sales')"
                     class="flex justify-between relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
@@ -183,13 +187,13 @@ class="flex flex-col gap-1 mt-1">
                         </svg>
                         <span>Sales</span>
                     </div>
-                    <svg x-show="openMenu !== 'sales' && !isActive('/sales')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu !== 'sales' && !isActive('/sales')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                     </svg>
-                    <svg x-show="openMenu === 'sales' || isActive('/sales')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu === 'sales' || isActive('/sales')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                     </svg>
@@ -200,10 +204,10 @@ class="flex flex-col gap-1 mt-1">
                     x-transition:enter-end="opacity-100 transform translate-y-0"
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 transform translate-y-0"
-                    x-transition:leave-end="opacity-0 transform -translate-y-4"
-                    class="flex flex-col gap-1 mt-1">
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
                     <a href="/sales/quotation" class="p-4 rounded"
-                        :class="isActive('/sales/quotation') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/sales/quotation') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Price Quotation
                     </a>
                     <a href="/sales/orders" class="p-4 rounded"
@@ -211,7 +215,8 @@ class="flex flex-col gap-1 mt-1">
                         Sales Order
                     </a>
                     <a href="/sales/shipping" class="p-4 rounded"
-                        :class="isActive('/sales/shipping') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/sales/shipping') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Shipping Status
                     </a>
                 </div>
@@ -228,14 +233,14 @@ class="flex flex-col gap-1 mt-1">
                         </svg>
                         <span>Marketing</span>
                     </div>
-                    <svg x-show="openMenu !== 'marketing' && !isActive('/marketing')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                        class="size-6 transition-transform duration-200">
+                    <svg x-show="openMenu !== 'marketing' && !isActive('/marketing')"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                     </svg>
-                    <svg x-show="openMenu === 'marketing' || isActive('/marketing')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                        class="size-6 transition-transform duration-200">
+                    <svg x-show="openMenu === 'marketing' || isActive('/marketing')"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                     </svg>
                 </a>
@@ -245,10 +250,10 @@ class="flex flex-col gap-1 mt-1">
                     x-transition:enter-end="opacity-100 transform translate-y-0"
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 transform translate-y-0"
-                    x-transition:leave-end="opacity-0 transform -translate-y-4"
-                    class="flex flex-col gap-1 mt-1">
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
                     <a href="/marketing/whatsapp" class="p-4 rounded"
-                        :class="isActive('/marketing/whatsapp') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/marketing/whatsapp') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         WhatsApp Campaign
                     </a>
                     <a href="/leads" class="p-4 rounded"
@@ -256,7 +261,8 @@ class="flex flex-col gap-1 mt-1">
                         Lead Management
                     </a>
                     <a href="/marketing/analysis" class="p-4 rounded"
-                        :class="isActive('/marketing/analysis') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/marketing/analysis') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Campaign Analysis
                     </a>
                 </div>
@@ -273,13 +279,13 @@ class="flex flex-col gap-1 mt-1">
                         </svg>
                         <span>Product</span>
                     </div>
-                    <svg x-show="openMenu !== 'product' && !isActive('/products')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu !== 'product' && !isActive('/products')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                     </svg>
-                    <svg x-show="openMenu === 'product' || isActive('/products')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu === 'product' || isActive('/products')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                     </svg>
@@ -290,18 +296,20 @@ class="flex flex-col gap-1 mt-1">
                     x-transition:enter-end="opacity-100 transform translate-y-0"
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 transform translate-y-0"
-                    x-transition:leave-end="opacity-0 transform -translate-y-4"
-                    class="flex flex-col gap-1 mt-1">
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
                     <a href="/products/catalog" class="p-4 rounded"
-                        :class="isActive('/products/catalog') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/products/catalog') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Product Catalog
                     </a>
                     <a href="/products/categories" class="p-4 rounded"
-                        :class="isActive('/products/categories') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/products/categories') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Categories
                     </a>
                     <a href="/products/prices" class="p-4 rounded"
-                        :class="isActive('/products/prices') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/products/prices') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Price List
                     </a>
                 </div>
@@ -318,13 +326,13 @@ class="flex flex-col gap-1 mt-1">
                         </svg>
                         <span>Project</span>
                     </div>
-                    <svg x-show="openMenu !== 'project' && !isActive('/projects')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu !== 'project' && !isActive('/projects')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                     </svg>
-                    <svg x-show="openMenu === 'project' || isActive('/projects')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg x-show="openMenu === 'project' || isActive('/projects')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="size-6 transition-transform duration-200">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                     </svg>
@@ -335,129 +343,133 @@ class="flex flex-col gap-1 mt-1">
                     x-transition:enter-end="opacity-100 transform translate-y-0"
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 transform translate-y-0"
-                    x-transition:leave-end="opacity-0 transform -translate-y-4"
-                    class="flex flex-col gap-1 mt-1">
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
                     <a href="/projects" class="p-4 rounded"
-                        :class="isActive('/projects') && !window.location.pathname.includes('/timeline') && !window.location.pathname.includes('/status') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/projects') && !window.location.pathname.includes('/timeline') && !window.location
+                            .pathname.includes('/status') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Project List
                     </a>
                     <a href="/projects/timeline" class="p-4 rounded"
-                        :class="isActive('/projects/timeline') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/projects/timeline') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Project Timeline
                     </a>
                     <a href="/projects/status" class="p-4 rounded"
-                        :class="isActive('/projects/status') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        :class="isActive('/projects/status') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
                         Project Status
                     </a>
                 </div>
 
                 <!-- Report Menu -->
                 <a @click="openMenu = (openMenu === 'report' ? null : 'report')"
-                class="flex justify-between relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
-                :class="isActive('/reports') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-black'">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                    </svg>
-                    <span>Report</span>
-                </div>
-                <svg x-show="openMenu !== 'report' && !isActive('/reports')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    class="size-6 transition-transform duration-200">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                </svg>
-                <svg x-show="openMenu === 'report' || isActive('/reports')" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    class="size-6 transition-transform duration-200">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-                </svg>
-            </a>
-            <div x-show="openMenu === 'report' || isActive('/reports')"
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 transform -translate-y-4"
-                x-transition:enter-end="opacity-100 transform translate-y-0"
-                x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="opacity-100 transform translate-y-0"
-                x-transition:leave-end="opacity-0 transform -translate-y-4"
-                class="flex flex-col gap-1 mt-1">
-                <a href="/reports/sales" class="p-4 rounded"
-                    :class="isActive('/reports/sales') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
-                    Sales Report
-                </a>
-                <a href="/reports/customers" class="p-4 rounded"
-                    :class="isActive('/reports/customers') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
-                    Customer Report
-                </a>
-                <a href="/reports/marketing" class="p-4 rounded"
-                    :class="isActive('/reports/marketing') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
-                    Marketing Report
-                </a>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="border-t p-3">
-            <div x-data="{ open: false }" class="relative">
-                <!-- User Info Button -->
-                <button @click="open = !open"
-                    class="flex items-center w-full hover:bg-gray-50 rounded-lg p-2 transition-colors duration-150">
-                    <div
-                        class="w-10 h-10 rounded-md bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
-                        {{ $userInitials }}
-                    </div>
-                    <div class="overflow-hidden ml-3 flex-1">
-                        <h4 class="font-semibold text-sm">{{ $userName }}</h4>
-                        <span class="text-xs text-gray-600">{{ $userEmail }}</span>
-                    </div>
-                    <!-- Dropdown Arrow -->
-                    <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'rotate-180': open }"
-                        class="h-5 w-5 text-gray-400 ml-2 transition-transform duration-200" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div x-show="open" @click.away="open = false"
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 transform scale-95"
-                    x-transition:enter-end="opacity-100 transform scale-100"
-                    x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="opacity-100 transform scale-100"
-                    x-transition:leave-end="opacity-0 transform scale-95"
-                    class="absolute bottom-full left-0 w-full mb-1 bg-white rounded-lg shadow-lg border py-1">
-
-                    <!-- Profile Link -->
-                    <a href="{{ route('profile.show') }}"
-                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    class="flex justify-between relative items-center py-2 px-3 my-1 font-medium rounded-md transition-colors"
+                    :class="isActive('/reports') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-black'">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                         </svg>
-                        Profile
+                        <span>Report</span>
+                    </div>
+                    <svg x-show="openMenu !== 'report' && !isActive('/reports')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                        class="size-6 transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                    <svg x-show="openMenu === 'report' || isActive('/reports')" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                        class="size-6 transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                    </svg>
+                </a>
+                <div x-show="openMenu === 'report' || isActive('/reports')"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 transform -translate-y-4"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform translate-y-0"
+                    x-transition:leave-end="opacity-0 transform -translate-y-4" class="flex flex-col gap-1 mt-1">
+                    <a href="/reports/sales" class="p-4 rounded"
+                        :class="isActive('/reports/sales') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
+                        Sales Report
                     </a>
-
-                    <!-- Logout Button -->
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <button type="submit"
-                            class="flex w-full items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            Log Out
-                        </button>
-                    </form>
+                    <a href="/reports/customers" class="p-4 rounded"
+                        :class="isActive('/reports/customers') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
+                        Customer Report
+                    </a>
+                    <a href="/reports/marketing" class="p-4 rounded"
+                        :class="isActive('/reports/marketing') ? 'bg-indigo-50 text-indigo-600' :
+                            'hover:bg-indigo-50 text-gray-600'">
+                        Marketing Report
+                    </a>
                 </div>
             </div>
-        </div>
-    </nav>
-</aside>
+
+            <!-- Footer -->
+            <div class="border-t p-3">
+                <div x-data="{ open: false }" class="relative">
+                    <!-- User Info Button -->
+                    <button @click="open = !open"
+                        class="flex items-center w-full hover:bg-gray-50 rounded-lg p-2 transition-colors duration-150">
+                        <div
+                            class="w-10 h-10 rounded-md bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
+                            {{ $userInitials }}
+                        </div>
+                        <div class="overflow-hidden ml-3 flex-1">
+                            <h4 class="font-semibold text-sm">{{ $userName }}</h4>
+                            <span class="text-xs text-gray-600">{{ $userEmail }}</span>
+                        </div>
+                        <!-- Dropdown Arrow -->
+                        <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'rotate-180': open }"
+                            class="h-5 w-5 text-gray-400 ml-2 transition-transform duration-200" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" @click.away="open = false"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform scale-95"
+                        x-transition:enter-end="opacity-100 transform scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 transform scale-100"
+                        x-transition:leave-end="opacity-0 transform scale-95"
+                        class="absolute bottom-full left-0 w-full mb-1 bg-white rounded-lg shadow-lg border py-1">
+
+                        <!-- Profile Link -->
+                        <a href="{{ route('profile.show') }}"
+                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            Profile
+                        </a>
+
+                        <!-- Logout Button -->
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                            @csrf
+                            <button type="submit"
+                                class="flex w-full items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Log Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </aside>
 </div>
